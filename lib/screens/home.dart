@@ -3,15 +3,13 @@ import 'package:notes_sample/model/note.dart';
 import 'package:notes_sample/model/note_model.dart';
 import 'package:notes_sample/screens/add_note.dart';
 import 'package:notes_sample/screens/edit_note.dart';
+import 'package:notes_sample/utils/firebase_utils.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
+  static const routeName = "/";
 
-  static const routeName = "main";
-
-  const MainScreen({
-    Key? key
-  }) : super(key: key);
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -21,17 +19,20 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+
+    FirebaseUserUtils.instance.subscibeNotes((notes) {
+      Provider.of<NotesModel>(context, listen: false).setNotes(notes);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    //widget.stopGetNotes();
+    FirebaseUserUtils.instance.stopSubscribeNotes();
   }
 
   void _onPressNote(String noteId) {
-    Navigator.pushNamed(context, EditNoteScreen.routeName,
-        arguments: noteId);
+    Navigator.pushNamed(context, EditNoteScreen.routeName, arguments: noteId);
   }
 
   void _onPressCreateNote() {
@@ -47,9 +48,7 @@ class _MainScreenState extends State<MainScreen> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Notes")
-      ),
+      appBar: AppBar(title: const Text("Notes")),
       body: Consumer<NotesModel>(builder: (context, notesModel, card) {
         final notes = notesModel.noteList;
         //show empty screen if notes is empty
@@ -68,7 +67,7 @@ class _MainScreenState extends State<MainScreen> {
                     _onPressNote(note.noteId);
                   },
                   title: Text(
-                    note.title.isEmpty ? "-" :note.title,
+                    note.title.isEmpty ? "-" : note.title,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold),
                   ),

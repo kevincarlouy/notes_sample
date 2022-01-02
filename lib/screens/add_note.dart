@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:notes_sample/model/note.dart';
 import 'package:notes_sample/model/note_model.dart';
+import 'package:notes_sample/utils/firebase_utils.dart';
 import 'package:notes_sample/widgets/note_detals.dart';
 import 'package:provider/provider.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  static const routeName = "main/add_note";
+  static const routeName = "/add_note";
 
   const AddNoteScreen({Key? key}) : super(key: key);
 
@@ -28,7 +29,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     final newNote = _noteController.text;
     if (newTitle.isNotEmpty || newNote.isNotEmpty) {
       final note = Note(title: newTitle, note: newNote);
-      Provider.of<NotesModel>(context, listen: false).addNote(note);
+      // Provider.of<NotesModel>(context, listen: false).addNote(note);
+      FirebaseUserUtils.instance.setNote(note);
     }
     Navigator.pop(context);
   }

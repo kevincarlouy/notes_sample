@@ -1,11 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_sample/firebase_options.dart';
 import 'package:notes_sample/model/note_model.dart';
 import 'package:notes_sample/screens/add_note.dart';
 import 'package:notes_sample/screens/edit_note.dart';
 import 'package:notes_sample/screens/home.dart';
+import 'package:notes_sample/screens/login.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(ChangeNotifierProvider(
       create: (context) => NotesModel(), child: const MyApp()));
 }
@@ -30,8 +38,10 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MainScreen(),
+      initialRoute: FirebaseAuth.instance.currentUser == null ? LoginScreen.routeName : MainScreen.routeName,
       routes: {
+        LoginScreen.routeName: (context) => const LoginScreen(),
+        MainScreen.routeName: (context) => const MainScreen(),
         AddNoteScreen.routeName: (context) => const AddNoteScreen(),
         EditNoteScreen.routeName: (context) => const EditNoteScreen(),
       },
